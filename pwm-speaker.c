@@ -3,26 +3,26 @@
 
 /* Global variables */
 static unsigned int flags = 0;
-static unsigned int c3 = 1911;
-static unsigned int d3 = 1703;
-static unsigned int e3 = 1516;
-static unsigned int f3 = 1432;
-static unsigned int g3 = 1275;
-static unsigned int a3 = 1135;
-static unsigned int b3 = 1011;
-static unsigned int c4 = 955;
-static unsigned int tmp = 1911;
+static unsigned int c3 = 11416;
+static unsigned int d3 = 10201;
+static unsigned int e3 = 9089;
+static unsigned int f3 = 8595;
+static unsigned int g3 = 7651;
+static unsigned int a3 = 6816;
+static unsigned int b3 = 6071;
+static unsigned int c4 = 5735;
+static unsigned int tmp = 5735;
 
 /* Function prototypes */
 void initIntGlobal (void);
 void initTimer (void);
 void initPWM (void);
 #pragma interrupt T3_ISR ipl4 vector 12
-#pragma config FPBDIV = DIV_8
+//#pragma config FPBDIV = DIV_8
 
 
 void GenMsec(void) {
-	PR3 = 99; // Load PR3
+	PR3 = 19999; // Load PR3
 	TMR3 = 0x0; // Clear contents of TMR3
 	T3CONSET = 0x8000; // Start Timer 3
 	while(1){
@@ -50,10 +50,10 @@ void T3_ISR (void)
 static void T3Con(void){
 
 	IPC3SET = 0b010001; // Interrupt priority level 4, Subpriority level 1
-	IFS0CLR = (1<<12); // Clear timer interrupt flag
-	IEC0SET = (1<<12); // Enable Timer3 interrupt
+	IFS0CLR = 0x1000; // Clear timer interrupt flag
+	IEC0SET = 0x1000; // Enable Timer3 interrupt
 	T3CON = 0x0; // Stop any 16/32-bit Timer2 operation
-	T3CONbits.TCKPS =  0b0; // Enable 16-bit mode, prescaler 1:1,
+	T3CONbits.TCKPS =  0b01; // Enable 16-bit mode, prescaler 1:8,
                     // internal clock
 	TMR3 = 0x0; // Clear contents of TMR2
 }
@@ -61,7 +61,7 @@ static void T3Con(void){
 /* Timer2 ISR - handling OC-PWM module operations */
 #pragma interrupt PWM_ISR ipl3 vector 8
 void PWM_ISR (void) {
-	OC1RS = PR2 * 0.1; //update duty cycle register
+	OC1RS = PR2 * 0.05; //update duty cycle register
 	IFS0CLR = 0x0100; //clear Timer 2 interrupt flag
 }
 
@@ -86,7 +86,7 @@ void initPWM() {
 	IFS0CLR = 0x00000100; //clear Timer 2 interrupt	
 	IEC0SET = 0x00000100; //enable Timer 2 interrupt
 	IPC2SET = 0x0000000F; //Timer 2 interrupt priority 3, subpriority 3
-//	T2CONbits.TCKPS = 1; 	// prescale = 1:2
+	T2CONbits.TCKPS = 0b101; 	// prescale = 1:64
 	T2CONSET = 0x8000; //start Timer 2
 	OC1CONCLR = 0x8000; //enable OC1 module for PWM generation
 }
@@ -94,64 +94,15 @@ void initPWM() {
 static void playnote(unsigned int n){
 	PR2 = n;
 	OC1CONSET = 0x8000;
-	DelayMsec(1000);
+	DelayMsec(700);
 	OC1CONCLR = 0x8000;
-	DelayMsec(500);
+	DelayMsec(300);
 	
 }
 
-static void Sim(void){
-	playnote(c3);
-	playnote(c3);
-	playnote(g3);
-	playnote(g3);
-	playnote(a3);
-	playnote(a3);
-	playnote(g3);
-	DelayMsec(1500);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	playnote(d3);
-	playnote(c3);
-	DelayMsec(1500);
-	playnote(g3);
-	playnote(g3);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	DelayMsec(1500);
-	playnote(g3);
-	playnote(g3);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	DelayMsec(1000);
-	playnote(c3);
-	playnote(g3);
-	playnote(g3);
-	playnote(a3);
-	playnote(a3);
-	playnote(g3);
-	DelayMsec(1000);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	playnote(d3);
-	playnote(c3);
-	DelayMsec(1000);
-
-
-
-
+static void note(unsigned int n){
+	PR2 = n;
+	OC1CONSET = 0x8000;
 }
 
 static void StarsSim(void){
@@ -162,7 +113,7 @@ static void StarsSim(void){
 	playnote(a3);
 	playnote(a3);
 	playnote(g3);
-	DelayMsec(1500);
+	DelayMsec(1000);
 	playnote(f3);
 	playnote(f3);
 	playnote(e3);
@@ -170,7 +121,7 @@ static void StarsSim(void){
 	playnote(d3);
 	playnote(d3);
 	playnote(c3);
-	DelayMsec(1500);
+	DelayMsec(1000);
 	playnote(g3);
 	playnote(g3);
 	playnote(f3);
@@ -178,7 +129,7 @@ static void StarsSim(void){
 	playnote(e3);
 	playnote(e3);
 	playnote(d3);
-	DelayMsec(1500);
+	DelayMsec(1000);
 	playnote(g3);
 	playnote(g3);
 	playnote(f3);
@@ -203,9 +154,9 @@ static void StarsSim(void){
 	playnote(c3);
 	DelayMsec(1000);
 
-
-
-
+}
+static void TestPWMFrequency(void){
+	note(d3);
 }
 
 /* main function */
@@ -215,6 +166,6 @@ int main() {
 	initPWM();
 	while (1){
 		StarsSim();
-		DelayMsec(2000);
+		//TestPWMFrequency();
 	}
 }
