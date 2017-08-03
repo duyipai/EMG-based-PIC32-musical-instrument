@@ -1,14 +1,6 @@
-#include <p32xxxx.h>
 #include "dsp.h"
 #include <plib.h>
-
-#include <string.h>
 #include <kmem.h>
-
-#pragma interrupt ADC_interrupt ipl2 vector 27
-#pragma interrupt DMA0_ISR ipl1 vector 36
-#pragma interrupt DMA1_ISR ipl1 vector 37
-#pragma interrupt DMA2_ISR ipl1 vector 38
 
 static int flags=0;
 static int buff = 0;
@@ -25,19 +17,7 @@ static unsigned char arrC2[20];
 
 static int count=0;
 
-
-
-
-
-
-
-
-
-
-
-
 void ADCcSonfig(void){
-	INTCONbits.MVEC = 1; 		// Enable multiple vector interrupt
 	asm ("ei"); 				// Enable all interrupts
 	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
 	IFS1CLR = 0x00000002; 		// Clear timer interrupt flag
@@ -50,7 +30,7 @@ void ADCcSonfig(void){
  // AD1CHSbits.CH0SB = 0b0011;	//b.  AN3 as pos input
 	//AD1CON1bits = 0x000;		//c. set output format 000 (unsigned, frac, 16-bit)	
     AD1CON1bits.FORM=0b100;	
-AD1CON1SET = 0xE0;		//d. SSRC
+	AD1CON1SET = 0xE0;		//d. SSRC
 	AD1CON2bits.VCFG = 0b011;	//e. VCFG 
 	//AD1CON2SET = 0x400;		//f. CSCNA field of AD1CON2, MUX A
 	//g. SMPI 0010
@@ -70,7 +50,6 @@ AD1CON1SET = 0xE0;		//d. SSRC
 	//l. ADCS Tad = 500 Tpb -> ADCS = 249
 	AD1CON3SET = 0xF9;
 
-
 	//m. turn on
 	AD1CON1SET = 0x8000;
 	AD1CON1bits.ASAM = 1;
@@ -84,8 +63,6 @@ void ADC_interrupt(void){
     {
      	AD1CON1bits.SAMP = 0;
     }
-
-
 
     if(ADC1BUF0>=0b1100000000)
     {
@@ -121,10 +98,29 @@ nonidea=ADC1BUF2;}
     arrC1[count]=valueC;
     count++;
 
-
+	if(count>=20)
+     {
+		int i1;
+		for(i1=0;i1<=19;i1++)
+		{
+		arrA2[i1]=arrA1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrB2[i1]=arrB1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrC2[i1]=arrC1[i1];
+		}
+		count=0;
+		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		AD1CON1bits.SAMP = 1;
+    }
 	
 	IFS1CLR = 0x2; 		// Clear ADC interrupt flag
-
 }
 
 void DMAconfig()
@@ -205,27 +201,6 @@ DMAconfig();
 
 	while(1)
     {
-    if(count>=20)
-     {
-int i1;
-for(i1=0;i1<=19;i1++)
-{
-arrA2[i1]=arrA1[i1];
-}
-for(i1=0;i1<=19;i1++)
-{
-arrB2[i1]=arrB1[i1];
-}
-for(i1=0;i1<=19;i1++)
-{
-arrC2[i1]=arrC1[i1];
-}
-count=0;
-DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-	AD1CON1bits.SAMP = 1;
-    }
-
+    
 }
 }

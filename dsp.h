@@ -9,9 +9,9 @@ struct status
 
 struct Receiver
 {
-    unsigned char arrA[30];
-    unsigned char arrB[30];
-    unsigned char arrC[30];
+    unsigned char arrA[20];
+    unsigned char arrB[20];
+    unsigned char arrC[20];
 } receiver;
 
 void pushStatus();
