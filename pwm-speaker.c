@@ -1,9 +1,13 @@
 #include <p32xxxx.h>
 #include <plib.h>
 #include "dsp.h"
+#include "pwm-speaker.h"
+
 
 /* Global variables */
 static unsigned int flags = 0;
+//static unsigned int flag_T2 = 0;
+
 static unsigned int c3 = 11416;
 static unsigned int d3 = 10201;
 static unsigned int e3 = 9089;
@@ -13,6 +17,7 @@ static unsigned int a3 = 6816;
 static unsigned int b3 = 6071;
 static unsigned int c4 = 5735;
 static unsigned int tmp = 5735;
+static struct status signal;
 
 /* Function prototypes */
 static void initIntGlobal (void);
@@ -20,7 +25,7 @@ static void initTimer (void);
 static void initPWM (void);
 
 #pragma interrupt T3_ISR ipl4 vector 12
-//#pragma config FPBDIV = DIV_8
+//#pragma interrupt T2_ISR ipl5 vector 8
 
 
 static void GenMsec(void) {
@@ -48,8 +53,51 @@ static void T3_ISR (void)
 	flags=1;
 	IFS0CLR = (1<<12); // Clear timer 3 interrupt flag
 }
+/*
+static void T2_ISR (void){
+	flag_T2 = 1;
+	IFS0CLR = (1<<8); // Clear timer 2 interrupt flag
+	
+}
+*/
 
-static void T3Con(void){
+static void LEDCon(void){
+	TRISD = 0x1;
+}
+
+static void give0(void){
+		PORTDbits.RD1 = 1;
+		asm("NOP");
+		PORTDbits.RD1 = 0;
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+	
+}
+
+void LEDSignal(void){
+	PORTDbits.RD1 = 1;
+	PORTDbits.RD1 = 0;
+	PORTDbits.RD1 = 1;
+	PORTDbits.RD1 = 0;
+}
+
+
+void T3Con(void){
 
 	IPC3SET = 0b010001; // Interrupt priority level 4, Subpriority level 1
 	IFS0CLR = 0x1000; // Clear timer interrupt flag
@@ -68,7 +116,7 @@ static void PWM_ISR (void) {
 }
 
 /* Configure interrupt globally */
-static void initIntGlobal() {
+void initIntGlobal(void) {
 	INTCONbits.MVEC = 1; // Enable multiple vector interrupt
 	asm("ei"); // Enable all interrupts
 }
@@ -76,7 +124,7 @@ static void initIntGlobal() {
 
 
 /* Initialize OC module and timer base - Timer 2 */
-static void initPWM() {
+void initPWM(void){
 	OC1CON = 0x0000; //stop OC1 module
 	OC1RS = 0; //initialize duty cycle register
 	OC1R = 0; //initialize OC1R register for the first time
@@ -161,9 +209,10 @@ static void TestPWMFrequency(void){
 	note(d3);
 }
 
-static void play(){
+void play(void){
 	OC1CONCLR = 0x8000;
-	status signal = getNote();
+	
+	signal = getNote();
 	if (signal.statusA == 0 && signal.statusB == 0 && signal.statusC == 0){
 		OC1CONCLR = 0x8000;
 	}
@@ -194,9 +243,33 @@ static void play(){
 int main() {
 	initIntGlobal();
 	T3Con();
+	LEDCon();
 	initPWM();
 	while (1){
-		StarsSim();
+		//StarsSim();
 		//TestPWMFrequency();
+		//LEDSignal();
+		PORTDbits.RD1 = 1;
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		PORTDbits.RD1 = 0;
+	
+		asm("NOP");
+	
 	}
 }
