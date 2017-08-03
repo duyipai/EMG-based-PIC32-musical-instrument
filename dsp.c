@@ -1,18 +1,18 @@
 #include "dsp.h"
 static unsigned char threshold = 170;
 static unsigned char numOfHit();
-static unsigned char statusEq(status * a, status * b);
+static unsigned char statusEq(struct status * a, struct status * b);
 struct accumStatus
 {
-    status statusArr[10];
-    unsigned char size = 0;
-    unsigned char frontIndex = 0;
+    struct status statusArr[10];
+    unsigned char size;
+    unsigned char frontIndex;
 };
 
-static status nullStatus;
-static accumStatus globalStatus;
+static struct status nullStatus;
+static struct accumStatus globalStatus;
 
-status getNote()
+struct status getNote()
 {
     if (globalStatus.size<9)
     {
@@ -20,9 +20,9 @@ status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[frontIndex]))>4)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>4)
         {
-            return globalStatus.statusArr[frontIndex];
+            return globalStatus.statusArr[globalStatus.frontIndex];
         }
         else
         {
@@ -33,11 +33,11 @@ status getNote()
 
 void pushStatus()
 {
-    status * modifiy = &(globalStatus.statusArr[frontIndex]);
-    ++frontIndex;
-    if(frontIndex > 9)
+    struct status * modifiy = &(globalStatus.statusArr[globalStatus.frontIndex]);
+    ++globalStatus.frontIndex;
+    if(globalStatus.frontIndex > 9)
     {
-        frontIndex = 0;
+        globalStatus.frontIndex = 0;
     }
 
     unsigned char hit = 0;
@@ -92,7 +92,7 @@ void pushStatus()
     }
 }
 
-static unsigned char statusEq(status * a, status * b)
+static unsigned char statusEq(struct status * a, struct status * b)
 {
     unsigned char res = 0;
     if(a->statusA == b->statusA)
@@ -108,12 +108,12 @@ static unsigned char statusEq(status * a, status * b)
     return res;
 }
 
-static unsigned char numOfHit(accumStatus * arr, status * element)
+static unsigned char numOfHit(struct accumStatus * arr, struct status * element)
 {
     unsigned char num = 0;
     for(unsigned char i = 0; i < 10; ++i)
     {
-        if(statusEq(arr+i, element))
+        if(statusEq(&(arr->statusArr[i]), element))
         {
             ++num;
         }

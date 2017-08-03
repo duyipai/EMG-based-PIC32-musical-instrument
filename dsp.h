@@ -2,9 +2,9 @@
 #define DSP_H
 struct status
 {
-    unsigned char statusA=0;
-    unsigned char statusB=0;
-    unsigned char statusC=0;
+    unsigned char statusA;
+    unsigned char statusB;
+    unsigned char statusC;
 };
 
 struct Receiver
@@ -15,5 +15,5 @@ struct Receiver
 } receiver;
 
 void pushStatus();
-status getNote();
+struct status getNote();
 #endif // 
