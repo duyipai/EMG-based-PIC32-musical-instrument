@@ -41,7 +41,8 @@ void pushStatus()
     }
 
     unsigned char hit = 0;
-    for(unsigned char i = 0; i < 30; ++i)
+    unsigned char i;
+    for(i = 0; i < 30; ++i)
     {
         if(receiver.arrA[i] > threshold)
         {
@@ -58,7 +59,7 @@ void pushStatus()
     }
 
     hit = 0;
-    for(unsigned char i = 0; i < 30; ++i)
+    for(i = 0; i < 30; ++i)
     {
         if(receiver.arrB[i] > threshold)
         {
@@ -75,7 +76,7 @@ void pushStatus()
     }
 
     hit = 0;
-    for(unsigned char i = 0; i < 30; ++i)
+    for(i = 0; i < 30; ++i)
     {
         if(receiver.arrC[i] > threshold)
         {
@@ -111,7 +112,8 @@ static unsigned char statusEq(struct status * a, struct status * b)
 static unsigned char numOfHit(struct accumStatus * arr, struct status * element)
 {
     unsigned char num = 0;
-    for(unsigned char i = 0; i < 10; ++i)
+    unsigned char i;
+    for(i= 0; i < 10; ++i)
     {
         if(statusEq(&(arr->statusArr[i]), element))
         {
