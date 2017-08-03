@@ -18,7 +18,6 @@ static unsigned int a3 = 6816;
 static unsigned int b3 = 6071;
 static unsigned int c4 = 5735;
 static unsigned int tmp = 5735;
-static struct status signal;
 
 
 
@@ -207,10 +206,7 @@ static void TestPWMFrequency(void){
 	note(d3);
 }
 
-void play(void){
-	OC1CONCLR = 0x8000;
-	
-	signal = getNote();
+void play(struct status signal){
 	if (signal.statusA == 0 && signal.statusB == 0 && signal.statusC == 0){
 		OC1CONCLR = 0x8000;
 	}
@@ -234,21 +230,5 @@ void play(void){
 	}
 	else if(signal.statusA == 1 && signal.statusB == 1 && signal.statusC == 1){
 		note(b3);
-	}
-}
-
-/* main function */
-int main() {
-	initIntGlobal();
-	T3Con();
-	LEDCon();
-	initPWM();
-			LEDred();
-	
-	while (1){
-		//StarsSim();
-		//TestPWMFrequency();
-		//LEDSignal();
-
 	}
 }

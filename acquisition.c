@@ -1,50 +1,23 @@
-#include <p32xxxx.h>
-
+#include "dsp.h"
 #include <plib.h>
-
-#include <string.h>
 #include <kmem.h>
-//#include <dsp.h>
-#pragma interrupt ADC_interrupt ipl2 vector 27
-#pragma interrupt DMA0_ISR ipl1 vector 36
-#pragma interrupt DMA1_ISR ipl1 vector 37
-#pragma interrupt DMA2_ISR ipl1 vector 38
 
 static int flags=0;
 static int buff = 0;
 static unsigned char valueA,valueB,valueC,nonidea;
-static unsigned char arrA1[30];
-static unsigned char destA[30];
-static unsigned char arrA2[30];
-static unsigned char arrB1[30];
-static unsigned char destB[30];
-static unsigned char arrB2[30];
-static unsigned char arrC1[30];
-static unsigned char destC[30];
-static unsigned char arrC2[30];
+static unsigned char arrA1[20];
+
+static unsigned char arrA2[20];
+static unsigned char arrB1[20];
+
+static unsigned char arrB2[20];
+static unsigned char arrC1[20];
+
+static unsigned char arrC2[20];
 
 static int count=0;
 
-void MCU_init() {
-
-
-/* setup Timer to count for 1 us and 1 ms */
-INTCONbits.MVEC = 1; // Enable multiple vector interrupt
-asm ("ei"); // Enable all interrupts
-
-} 
-
-
-
-
-
-
-
-
-
-
 void ADCcSonfig(void){
-	INTCONbits.MVEC = 1; 		// Enable multiple vector interrupt
 	asm ("ei"); 				// Enable all interrupts
 	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
 	IFS1CLR = 0x00000002; 		// Clear timer interrupt flag
@@ -57,7 +30,7 @@ void ADCcSonfig(void){
  // AD1CHSbits.CH0SB = 0b0011;	//b.  AN3 as pos input
 	//AD1CON1bits = 0x000;		//c. set output format 000 (unsigned, frac, 16-bit)	
     AD1CON1bits.FORM=0b100;	
-AD1CON1SET = 0xE0;		//d. SSRC
+	AD1CON1SET = 0xE0;		//d. SSRC
 	AD1CON2bits.VCFG = 0b011;	//e. VCFG 
 	//AD1CON2SET = 0x400;		//f. CSCNA field of AD1CON2, MUX A
 	//g. SMPI 0010
@@ -72,11 +45,10 @@ AD1CON1SET = 0xE0;		//d. SSRC
 //	AD1CON2CLR = 0x0;
  	//j. ADRC		Tad > 65ns
 	AD1CON3CLR = 0x8000;
-	//k. SAMC auto-sample time bits 28
-	AD1CON3SET = 0x1C00;
+	//k. SAMC auto-sample time bits 20
+	AD1CON3bits.SAMC = 0b10100;
 	//l. ADCS Tad = 500 Tpb -> ADCS = 249
 	AD1CON3SET = 0xF9;
-
 
 	//m. turn on
 	AD1CON1SET = 0x8000;
@@ -87,12 +59,10 @@ void ADC_interrupt(void){
 	//AD1CON1SET = 0x1;
 
 	// deliver data to LCD
-    if(count>=29)
+    if(count>=19)
     {
      	AD1CON1bits.SAMP = 0;
     }
-
-
 
     if(ADC1BUF0>=0b1100000000)
     {
@@ -128,10 +98,29 @@ nonidea=ADC1BUF2;}
     arrC1[count]=valueC;
     count++;
 
-
+	if(count>=20)
+     {
+		int i1;
+		for(i1=0;i1<=19;i1++)
+		{
+		arrA2[i1]=arrA1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrB2[i1]=arrB1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrC2[i1]=arrC1[i1];
+		}
+		count=0;
+		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		AD1CON1bits.SAMP = 1;
+    }
 	
 	IFS1CLR = 0x2; 		// Clear ADC interrupt flag
-
 }
 
 void DMAconfig()
@@ -148,20 +137,20 @@ DCH1ECON=0; // no start or stop IRQ, no pattern match
 DCH2ECON=0; // no start or stop IRQ, no pattern match
 /********* program the transfer *********/
 DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
-DCH0DSA=KVA_TO_PA(&destA[0]); // transfer destination physical address
-DCH0SSIZ=30; // source size 30 bytes
-DCH0DSIZ=30; // destination size 30 bytes
-DCH0CSIZ=30; // 30 bytes transferred per event
+DCH0DSA=KVA_TO_PA(&receiver.arrA[0]); // transfer destination physical address
+DCH0SSIZ=20; // source size 30 bytes
+DCH0DSIZ=20; // destination size 30 bytes
+DCH0CSIZ=20; // 30 bytes transferred per event
 DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
-DCH1DSA=KVA_TO_PA(&destB[0]); // transfer destination physical address
-DCH1SSIZ=30; // source size 30 bytes
-DCH1DSIZ=30; // destination size 30 bytes
-DCH1CSIZ=30; // 30 bytes transferred per event
+DCH1DSA=KVA_TO_PA(&receiver.arrB[0]); // transfer destination physical address
+DCH1SSIZ=20; // source size 30 bytes
+DCH1DSIZ=20; // destination size 30 bytes
+DCH1CSIZ=20; // 30 bytes transferred per event
 DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
-DCH2DSA=KVA_TO_PA(&destC[0]); // transfer destination physical address
-DCH2SSIZ=30; // source size 30 bytes
-DCH2DSIZ=30; // destination size 30 bytes
-DCH2CSIZ=30; // 30 bytes transferred per event
+DCH2DSA=KVA_TO_PA(&receiver.arrC[0]); // transfer destination physical address
+DCH2SSIZ=20; // source size 30 bytes
+DCH2DSIZ=20; // destination size 30 bytes
+DCH2CSIZ=20; // 30 bytes transferred per event
 DCH0INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
 DCH0INTbits.CHBCIE=1;//enable the destination done interrupt
 DCH1INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
@@ -186,51 +175,32 @@ void DMA0_ISR ()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
 DCH0ECONbits.CABORT=0b1;
+pushStatus();
 }
 
 void DMA1_ISR ()
 {
 IFS1CLR=0x00020000; // clear existing DMA channel 1 interrupt flag
 DCH1ECONbits.CABORT=0b1;
+pushStatus();
 }
 
 void DMA2_ISR ()
 {
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
 DCH2ECONbits.CABORT=0b1;
+pushStatus();
 }
 
 int main(){
 
 
-	MCU_init();
 	ADCcSonfig();
 DMAconfig();
 	AD1CON1bits.SAMP = 1;
 
 	while(1)
     {
-    if(count>=30)
-     {
-int i1;
-for(i1=0;i1<=29;i1++)
-{
-arrA2[i1]=arrA1[i1];
-}
-for(i1=0;i1<=29;i1++)
-{
-arrB2[i1]=arrB1[i1];
-}
-for(i1=0;i1<=29;i1++)
-{
-arrC2[i1]=arrC1[i1];
-}
-count=0;
-DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-	AD1CON1bits.SAMP = 1;
-    }
-
+    
 }
 }
