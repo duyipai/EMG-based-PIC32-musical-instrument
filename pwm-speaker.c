@@ -1,6 +1,7 @@
 #include <p32xxxx.h>
 #include <plib.h>
 #include "dsp.h"
+#include "pwm-speaker.h"
 
 
 /* Global variables */
@@ -248,5 +249,27 @@ int main() {
 		//StarsSim();
 		//TestPWMFrequency();
 		//LEDSignal();
+		PORTDbits.RD1 = 1;
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		asm("NOP");
+		PORTDbits.RD1 = 0;
+	
+		asm("NOP");
+	
 	}
 }
