@@ -2,6 +2,7 @@
 #include <plib.h>
 #include "dsp.h"
 
+
 /* Global variables */
 static unsigned int flags = 0;
 //static unsigned int flag_T2 = 0;
@@ -86,7 +87,8 @@ static void give0(void){
 		asm("NOP");
 	
 }
-static void LEDSignal(void){
+
+void LEDSignal(void){
 	PORTDbits.RD1 = 1;
 	PORTDbits.RD1 = 0;
 	PORTDbits.RD1 = 1;
@@ -94,7 +96,7 @@ static void LEDSignal(void){
 }
 
 
-static void T3Con(void){
+void T3Con(void){
 
 	IPC3SET = 0b010001; // Interrupt priority level 4, Subpriority level 1
 	IFS0CLR = 0x1000; // Clear timer interrupt flag
@@ -113,7 +115,7 @@ static void PWM_ISR (void) {
 }
 
 /* Configure interrupt globally */
-static void initIntGlobal() {
+void initIntGlobal(void) {
 	INTCONbits.MVEC = 1; // Enable multiple vector interrupt
 	asm("ei"); // Enable all interrupts
 }
@@ -121,7 +123,7 @@ static void initIntGlobal() {
 
 
 /* Initialize OC module and timer base - Timer 2 */
-static void initPWM() {
+void initPWM(void){
 	OC1CON = 0x0000; //stop OC1 module
 	OC1RS = 0; //initialize duty cycle register
 	OC1R = 0; //initialize OC1R register for the first time
@@ -206,7 +208,7 @@ static void TestPWMFrequency(void){
 	note(d3);
 }
 
-static void play(){
+void play(void){
 	OC1CONCLR = 0x8000;
 	
 	signal = getNote();
