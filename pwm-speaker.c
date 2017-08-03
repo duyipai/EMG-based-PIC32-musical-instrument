@@ -2,6 +2,7 @@
 #include <plib.h>
 #include "dsp.h"
 #include "pwm-speaker.h"
+#include "LED.h"
 
 
 /* Global variables */
@@ -19,10 +20,7 @@ static unsigned int c4 = 5735;
 static unsigned int tmp = 5735;
 static struct status signal;
 
-/* Function prototypes */
-static void initIntGlobal (void);
-static void initTimer (void);
-static void initPWM (void);
+
 
 #pragma interrupt T3_ISR ipl4 vector 12
 //#pragma interrupt T2_ISR ipl5 vector 8
@@ -245,31 +243,12 @@ int main() {
 	T3Con();
 	LEDCon();
 	initPWM();
+			LEDred();
+	
 	while (1){
 		//StarsSim();
 		//TestPWMFrequency();
 		//LEDSignal();
-		PORTDbits.RD1 = 1;
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		PORTDbits.RD1 = 0;
-	
-		asm("NOP");
-	
+
 	}
 }
