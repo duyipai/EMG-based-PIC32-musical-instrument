@@ -53,20 +53,6 @@ static void T3_ISR (void)
 	IFS0CLR = (1<<12); // Clear timer 3 interrupt flag
 }
 
-
-static void LEDCon(void){
-	TRISD = 0x1;
-}
-
-
-void LEDSignal(void){
-	PORTDbits.RD1 = 1;
-	PORTDbits.RD1 = 0;
-	PORTDbits.RD1 = 1;
-	PORTDbits.RD1 = 0;
-}
-
-
 void T3Con(void){
 
 	IPC3SET = 0b010001; // Interrupt priority level 4, Subpriority level 1
