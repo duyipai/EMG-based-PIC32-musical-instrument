@@ -10,7 +10,7 @@ struct accumStatus
 };
 
 static struct status nullStatus;
-static struct accumStatus globalStatus;
+struct accumStatus globalStatus;
 
 struct status getNote()
 {

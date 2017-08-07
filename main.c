@@ -7,7 +7,7 @@ int main()
     INTCONbits.MVEC = 1; // Enable multiple vector interrupt
     //initIntGlobal();
     ADCcSonfig();
-    DMAconfig();
+   // DMAconfig();
     
 	//T3Con();
 	//LEDCon();
@@ -16,6 +16,6 @@ int main()
 	while (1)
     {
         //play(getNote());
-        //struct status tmp= getNote();
+        struct status tmp= getNote();
 	}
 }

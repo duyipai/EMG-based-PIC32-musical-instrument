@@ -17,6 +17,8 @@ static unsigned char arrC2[20];
 
 static int count=0;
 
+void DMAconfig();
+
 void ADCcSonfig(void){
 	asm ("ei"); 				// Enable all interrupts
 	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
@@ -48,7 +50,7 @@ void ADCcSonfig(void){
 	//k. SAMC auto-sample time bits 20
 	AD1CON3bits.SAMC = 0b10100;
 	//l. ADCS Tad = 500 Tpb -> ADCS = 249
-	AD1CON3SET = 0xF9;
+	AD1CON3SET = 0x7c;
 
 	//m. turn on
 	AD1CON1SET = 0x8000;
@@ -115,6 +117,7 @@ nonidea=ADC1BUF2;}
 		arrC2[i1]=arrC1[i1];
 		}
 		count=0;
+		DMAconfig();
 		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
 		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
 		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
@@ -138,17 +141,17 @@ DCH1ECON=0; // no start or stop IRQ, no pattern match
 DCH2ECON=0; // no start or stop IRQ, no pattern match
 /********* program the transfer *********/
 DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
-DCH0DSA=KVA_TO_PA(&receiver.arrA[0]); // transfer destination physical address
+DCH0DSA=KVA_TO_PA(&(receiver.arrA[0])); // transfer destination physical address
 DCH0SSIZ=20; // source size 30 bytes
 DCH0DSIZ=20; // destination size 30 bytes
 DCH0CSIZ=20; // 30 bytes transferred per event
 DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
-DCH1DSA=KVA_TO_PA(&receiver.arrB[0]); // transfer destination physical address
+DCH1DSA=KVA_TO_PA(&(receiver.arrB[0])); // transfer destination physical address
 DCH1SSIZ=20; // source size 30 bytes
 DCH1DSIZ=20; // destination size 30 bytes
 DCH1CSIZ=20; // 30 bytes transferred per event
 DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
-DCH2DSA=KVA_TO_PA(&receiver.arrC[0]); // transfer destination physical address
+DCH2DSA=KVA_TO_PA(&(receiver.arrC[0])); // transfer destination physical address
 DCH2SSIZ=20; // source size 30 bytes
 DCH2DSIZ=20; // destination size 30 bytes
 DCH2CSIZ=20; // 30 bytes transferred per event
@@ -176,7 +179,7 @@ DCH2CONSET=0x80; // turn channel on
 void DMA0_ISR ()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
-DCH0ECONbits.CABORT=0b1;
+//DCH0ECONbits.CABORT=0b1;
 pushStatus();
 }
 
@@ -184,7 +187,7 @@ pushStatus();
 void DMA1_ISR ()
 {
 IFS1CLR=0x00020000; // clear existing DMA channel 1 interrupt flag
-DCH1ECONbits.CABORT=0b1;
+//DCH1ECONbits.CABORT=0b1;
 pushStatus();
 }
 
@@ -192,6 +195,6 @@ pushStatus();
 void DMA2_ISR ()
 {
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
-DCH2ECONbits.CABORT=0b1;
+//DCH2ECONbits.CABORT=0b1;
 pushStatus();
 }
