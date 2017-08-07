@@ -16,6 +16,10 @@ int main()
 	while (1)
     {
         //play(getNote());
+<<<<<<< HEAD
         //struct status tmp= getNote();
+=======
+		StarsSim();
+>>>>>>> 7b9efa4b6ac590a9e06a6bda4a696243b499b1df
 	}
 }
