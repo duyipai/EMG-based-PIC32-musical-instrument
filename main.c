@@ -1,16 +1,21 @@
 #include "acquisition.h"
-#include "pwm-speaker.h"
+#include "dsp.h"
+//#include "speaker.h"
 
 int main()
 {
-    initIntGlobal();
+    INTCONbits.MVEC = 1; // Enable multiple vector interrupt
+    //initIntGlobal();
     ADCcSonfig();
     DMAconfig();
-	T3Con();
-	LEDCon();
-	initPWM();
+    
+	//T3Con();
+	//LEDCon();
+	//initPWM();
+    AD1CON1bits.SAMP = 1;
 	while (1)
     {
-        play(getNote());
+        //play(getNote());
+        //struct status tmp= getNote();
 	}
 }

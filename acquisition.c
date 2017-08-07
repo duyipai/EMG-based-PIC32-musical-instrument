@@ -1,6 +1,6 @@
 #include "dsp.h"
 #include <plib.h>
-#include <kmem.h>
+#include <sys/kmem.h>
 
 static int flags=0;
 static int buff = 0;
@@ -55,6 +55,7 @@ void ADCcSonfig(void){
 	AD1CON1bits.ASAM = 1;
 }
 
+#pragma interrupt ADC_interrupt ipl2 vector 27
 void ADC_interrupt(void){
 	//AD1CON1SET = 0x1;
 
@@ -171,6 +172,7 @@ DCH1CONSET=0x80; // turn channel on
 DCH2CONSET=0x80; // turn channel on
 }
 
+#pragma interrupt DMA0_ISR ipl1 vector 36
 void DMA0_ISR ()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
@@ -178,6 +180,7 @@ DCH0ECONbits.CABORT=0b1;
 pushStatus();
 }
 
+#pragma interrupt DMA1_ISR ipl1 vector 37
 void DMA1_ISR ()
 {
 IFS1CLR=0x00020000; // clear existing DMA channel 1 interrupt flag
@@ -185,6 +188,7 @@ DCH1ECONbits.CABORT=0b1;
 pushStatus();
 }
 
+#pragma interrupt DMA2_ISR ipl1 vector 38
 void DMA2_ISR ()
 {
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
@@ -192,15 +196,4 @@ DCH2ECONbits.CABORT=0b1;
 pushStatus();
 }
 
-int main(){
 
-
-	ADCcSonfig();
-DMAconfig();
-	AD1CON1bits.SAMP = 1;
-
-	while(1)
-    {
-    
-}
-}

@@ -2,10 +2,8 @@
 #include <plib.h>
 #include "dsp.h"
 #include "pwm-speaker.h"
-#include "LED.h"
-
-
 /* Global variables */
+
 static unsigned int flags = 0;
 //static unsigned int flag_T2 = 0;
 
@@ -19,7 +17,10 @@ static unsigned int b3 = 6071;
 static unsigned int c4 = 5735;
 static unsigned int tmp = 5735;
 
-
+/* Function prototypes */
+static void initIntGlobal (void);
+static void initTimer (void);
+static void initPWM (void);
 
 #pragma interrupt T3_ISR ipl4 vector 12
 //#pragma interrupt T2_ISR ipl5 vector 8

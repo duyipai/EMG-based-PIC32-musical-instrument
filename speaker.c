@@ -1,8 +1,7 @@
 #include <p32xxxx.h>
 #include <plib.h>
 #include "dsp.h"
-#include "pwm-speaker.h"
-#include "LED.h"
+#include "speaker.h"
 
 /*
 In this file, components are used to fit FRC (8MHz)
