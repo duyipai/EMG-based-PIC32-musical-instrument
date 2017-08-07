@@ -11,6 +11,7 @@ int main()
 	initPWM();
 	while (1)
     {
-        play(getNote());
+        //play(getNote());
+		StarsSim();
 	}
 }

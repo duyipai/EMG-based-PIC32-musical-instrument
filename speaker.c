@@ -2,10 +2,9 @@
 #include <plib.h>
 #include "dsp.h"
 #include "pwm-speaker.h"
-#include "LED.h"
 
 /*
-In this file, components are used to fit FRC (8MHz)
+In this file, components are used to fit FRCDIV (4MHz)
 */
 
 /* Global variables */
@@ -25,11 +24,11 @@ static unsigned int tmp = 1911;
 
 
 #pragma interrupt T3_ISR ipl4 vector 12
-#pragma interrupt T2_ISR ipl5 vector 8
+//PWM use T2
 
 
 static void GenMsec(void) {
-	PR3 = 19999; // Load PR3
+	PR3 = 999; // Load PR3
 	TMR3 = 0x0; // Clear contents of TMR3
 	T3CONSET = 0x8000; // Start Timer 3
 	while(1){
@@ -42,8 +41,8 @@ static void GenMsec(void) {
 }
 
 static void DelayMsec(int num) {
-	int i;
-	for (i=0; i<num; i++) {
+	int ii;
+	for (ii=0; ii<num; ii++) {
 		GenMsec();
 	}
 }
@@ -74,9 +73,9 @@ void T3Con(void){
 	IFS0CLR = 0x1000; // Clear timer interrupt flag
 	IEC0SET = 0x1000; // Enable Timer3 interrupt
 	T3CON = 0x0; // Stop any 16/32-bit Timer2 operation
-	T3CONbits.TCKPS =  0b01; // Enable 16-bit mode, prescaler 1:8,
+	T3CONbits.TCKPS =  0b00; // Enable 16-bit mode, prescaler 1:1,
                     // internal clock
-	TMR3 = 0x0; // Clear contents of TMR2
+	TMR3 = 0x0; // Clear contents of TMR3
 }
 
 /* Timer2 ISR - handling OC-PWM module operations */
@@ -126,7 +125,7 @@ static void note(unsigned int n){
 	OC1CONSET = 0x8000;
 }
 
-static void StarsSim(void){
+void StarsSim(void){
 	playnote(c3);
 	playnote(c3);
 	playnote(g3);
@@ -206,3 +205,4 @@ void play(struct status signal){
 		note(b3);
 	}
 }
+

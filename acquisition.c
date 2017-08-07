@@ -191,7 +191,7 @@ IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
 DCH2ECONbits.CABORT=0b1;
 pushStatus();
 }
-
+/*
 int main(){
 
 
@@ -204,3 +204,4 @@ DMAconfig();
     
 }
 }
+*/
