@@ -195,22 +195,3 @@ IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
 DCH2ECONbits.CABORT=0b1;
 pushStatus();
 }
-<<<<<<< HEAD
-
-
-=======
-/*
-int main(){
-
-
-	ADCcSonfig();
-DMAconfig();
-	AD1CON1bits.SAMP = 1;
-
-	while(1)
-    {
-    
-}
-}
-*/
->>>>>>> 7b9efa4b6ac590a9e06a6bda4a696243b499b1df
