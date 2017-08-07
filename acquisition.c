@@ -5,15 +5,15 @@
 static int flags=0;
 static int buff = 0;
 static unsigned char valueA,valueB,valueC,nonidea;
-static unsigned char arrA1[20];
+static unsigned char arrA1[10];
 
-static unsigned char arrA2[20];
-static unsigned char arrB1[20];
+static unsigned char arrA2[10];
+static unsigned char arrB1[10];
 
-static unsigned char arrB2[20];
-static unsigned char arrC1[20];
+static unsigned char arrB2[10];
+static unsigned char arrC1[10];
 
-static unsigned char arrC2[20];
+static unsigned char arrC2[10];
 
 static int count=0;
 
@@ -49,7 +49,7 @@ void ADCcSonfig(void){
 	AD1CON3CLR = 0x8000;
 	//k. SAMC auto-sample time bits 20
 	AD1CON3bits.SAMC = 0b10100;
-	//l. ADCS Tad = 500 Tpb -> ADCS = 249
+	//l. ADCS Tad = 250 Tpb -> ADCS = 124
 	AD1CON3SET = 0x7c;
 
 	//m. turn on
@@ -62,7 +62,7 @@ void ADC_interrupt(void){
 	//AD1CON1SET = 0x1;
 
 	// deliver data to LCD
-    if(count>=19)
+    if(count>=9)
     {
      	AD1CON1bits.SAMP = 0;
     }
@@ -101,18 +101,18 @@ nonidea=ADC1BUF2;}
     arrC1[count]=valueC;
     count++;
 
-	if(count>=20)
+	if(count>=10)
      {
 		int i1;
-		for(i1=0;i1<=19;i1++)
+		for(i1=0;i1<=9;i1++)
 		{
 		arrA2[i1]=arrA1[i1];
 		}
-		for(i1=0;i1<=19;i1++)
+		for(i1=0;i1<=9;i1++)
 		{
 		arrB2[i1]=arrB1[i1];
 		}
-		for(i1=0;i1<=19;i1++)
+		for(i1=0;i1<=9;i1++)
 		{
 		arrC2[i1]=arrC1[i1];
 		}
@@ -142,19 +142,19 @@ DCH2ECON=0; // no start or stop IRQ, no pattern match
 /********* program the transfer *********/
 DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
 DCH0DSA=KVA_TO_PA(&(receiver.arrA[0])); // transfer destination physical address
-DCH0SSIZ=20; // source size 30 bytes
-DCH0DSIZ=20; // destination size 30 bytes
-DCH0CSIZ=20; // 30 bytes transferred per event
+DCH0SSIZ=10; // source size 30 bytes
+DCH0DSIZ=10; // destination size 30 bytes
+DCH0CSIZ=10; // 30 bytes transferred per event
 DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
 DCH1DSA=KVA_TO_PA(&(receiver.arrB[0])); // transfer destination physical address
-DCH1SSIZ=20; // source size 30 bytes
-DCH1DSIZ=20; // destination size 30 bytes
-DCH1CSIZ=20; // 30 bytes transferred per event
+DCH1SSIZ=10; // source size 30 bytes
+DCH1DSIZ=10; // destination size 30 bytes
+DCH1CSIZ=10; // 30 bytes transferred per event
 DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
 DCH2DSA=KVA_TO_PA(&(receiver.arrC[0])); // transfer destination physical address
-DCH2SSIZ=20; // source size 30 bytes
-DCH2DSIZ=20; // destination size 30 bytes
-DCH2CSIZ=20; // 30 bytes transferred per event
+DCH2SSIZ=10; // source size 30 bytes
+DCH2DSIZ=10; // destination size 30 bytes
+DCH2CSIZ=10; // 30 bytes transferred per event
 DCH0INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
 DCH0INTbits.CHBCIE=1;//enable the destination done interrupt
 DCH1INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
@@ -162,11 +162,11 @@ DCH1INTbits.CHBCIE=1;//enable the destination done interrupt
 DCH2INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
 DCH2INTbits.CHBCIE=1;//enable the destination done interrupt
 IPC9CLR=0x0000001f; // clear the DMA channel 0 priority and sub-priority
-IPC9SET=0x00000006; // set IPL 1, sub-priority 2
+IPC9SET=0x0000000d; // set IPL 3, sub-priority 2
 IPC9CLR=0x00001F00; // clear the DMA channel 1 priority and sub-priority
-IPC9SET=0x00000600; // set IPL 1, sub-priority 2
+IPC9SET=0x00000d00; // set IPL 3, sub-priority 2
 IPC9CLR=0x001F0000; // clear the DMA channel 2 priority and sub-priority
-IPC9SET=0x00060000; // set IPL 1, sub-priority 2
+IPC9SET=0x000d0000; // set IPL 3, sub-priority 2
 IEC1SET=0x00010000; // enable DMA channel 0 interrupt
 IEC1SET=0x00020000; // enable DMA channel 1 interrupt
 IEC1SET=0x00040000; // enable DMA channel 2 interrupt
@@ -175,23 +175,23 @@ DCH1CONSET=0x80; // turn channel on
 DCH2CONSET=0x80; // turn channel on
 }
 
-#pragma interrupt DMA0_ISR ipl1 vector 36
+#pragma interrupt DMA0_ISR ipl3 vector 36
 void DMA0_ISR ()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
 //DCH0ECONbits.CABORT=0b1;
-pushStatus();
+//pushStatus();
 }
 
-#pragma interrupt DMA1_ISR ipl1 vector 37
+#pragma interrupt DMA1_ISR ipl3 vector 37
 void DMA1_ISR ()
 {
 IFS1CLR=0x00020000; // clear existing DMA channel 1 interrupt flag
 //DCH1ECONbits.CABORT=0b1;
-pushStatus();
+//pushStatus();
 }
 
-#pragma interrupt DMA2_ISR ipl1 vector 38
+#pragma interrupt DMA2_ISR ipl3 vector 38
 void DMA2_ISR ()
 {
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag

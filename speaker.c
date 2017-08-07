@@ -190,5 +190,8 @@ void play(struct status signal){
 	else if(signal.statusA == 1 && signal.statusB == 1 && signal.statusC == 1){
 		note(b3);
 	}
+//	else {note(c4);}
+
+	//note(c4);
 }
 
