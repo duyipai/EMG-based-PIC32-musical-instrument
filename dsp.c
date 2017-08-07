@@ -34,6 +34,7 @@ struct status getNote()
 void pushStatus()
 {
     struct status * modifiy = &(globalStatus.statusArr[globalStatus.frontIndex]);
+    ++ globalStatus.size;
     ++globalStatus.frontIndex;
     if(globalStatus.frontIndex > 19)
     {
