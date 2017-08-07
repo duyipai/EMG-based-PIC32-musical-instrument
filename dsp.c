@@ -1,5 +1,5 @@
 #include "dsp.h"
-static unsigned char threshold = 170;
+static unsigned char threshold = 200;
 static unsigned char numOfHit();
 static unsigned char statusEq(struct status * a, struct status * b);
 struct accumStatus
@@ -20,7 +20,7 @@ struct status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>9)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>5)
         {
             return globalStatus.statusArr[globalStatus.frontIndex];
         }
@@ -43,14 +43,14 @@ void pushStatus()
 
     unsigned char hit = 0;
     unsigned char i;
-    for(i = 0; i < 20; ++i)
+    for(i = 0; i < 10; ++i)
     {
         if(receiver.arrA[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 20)
+    if (hit == 10)
     {
         modifiy->statusA = 1;
     }
@@ -60,14 +60,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 20; ++i)
+    for(i = 0; i < 10; ++i)
     {
         if(receiver.arrB[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 20)
+    if (hit == 10)
     {
         modifiy->statusB = 1;
     }
@@ -77,14 +77,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 20; ++i)
+    for(i = 0; i < 10; ++i)
     {
         if(receiver.arrC[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 20)
+    if (hit == 10)
     {
         modifiy->statusC = 1;
     }
