@@ -1,35 +1,34 @@
 #include <p32xxxx.h>
 #include <plib.h>
 #include "dsp.h"
-#include "pwm-speaker.h"
+#include "speaker.h"
 
+/*
+In this file, components are used to fit FRCDIV (4MHz)
+*/
 
 /* Global variables */
 static unsigned int flags = 0;
 //static unsigned int flag_T2 = 0;
 
-static unsigned int c3 = 11416;
-static unsigned int d3 = 10201;
-static unsigned int e3 = 9089;
-static unsigned int f3 = 8595;
-static unsigned int g3 = 7651;
-static unsigned int a3 = 6816;
-static unsigned int b3 = 6071;
-static unsigned int c4 = 5735;
-static unsigned int tmp = 5735;
-static struct status signal;
+static unsigned int c3 = 3816;
+static unsigned int d3 = 3400;
+static unsigned int e3 = 3029;
+static unsigned int f3 = 2864;
+static unsigned int g3 = 2550;
+static unsigned int a3 = 2272;
+static unsigned int b3 = 2023;
+static unsigned int c4 = 1911;
+static unsigned int tmp = 1911;
 
-/* Function prototypes */
-static void initIntGlobal (void);
-static void initTimer (void);
-static void initPWM (void);
+
 
 #pragma interrupt T3_ISR ipl4 vector 12
-//#pragma interrupt T2_ISR ipl5 vector 8
+//PWM use T2
 
 
 static void GenMsec(void) {
-	PR3 = 19999; // Load PR3
+	PR3 = 999; // Load PR3
 	TMR3 = 0x0; // Clear contents of TMR3
 	T3CONSET = 0x8000; // Start Timer 3
 	while(1){
@@ -42,8 +41,8 @@ static void GenMsec(void) {
 }
 
 static void DelayMsec(int num) {
-	int i;
-	for (i=0; i<num; i++) {
+	int ii;
+	for (ii=0; ii<num; ii++) {
 		GenMsec();
 	}
 }
@@ -53,41 +52,12 @@ static void T3_ISR (void)
 	flags=1;
 	IFS0CLR = (1<<12); // Clear timer 3 interrupt flag
 }
-/*
-static void T2_ISR (void){
-	flag_T2 = 1;
-	IFS0CLR = (1<<8); // Clear timer 2 interrupt flag
-	
-}
-*/
+
 
 static void LEDCon(void){
 	TRISD = 0x1;
 }
 
-static void give0(void){
-		PORTDbits.RD1 = 1;
-		asm("NOP");
-		PORTDbits.RD1 = 0;
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-	
-}
 
 void LEDSignal(void){
 	PORTDbits.RD1 = 1;
@@ -103,9 +73,9 @@ void T3Con(void){
 	IFS0CLR = 0x1000; // Clear timer interrupt flag
 	IEC0SET = 0x1000; // Enable Timer3 interrupt
 	T3CON = 0x0; // Stop any 16/32-bit Timer2 operation
-	T3CONbits.TCKPS =  0b01; // Enable 16-bit mode, prescaler 1:8,
+	T3CONbits.TCKPS =  0b00; // Enable 16-bit mode, prescaler 1:1,
                     // internal clock
-	TMR3 = 0x0; // Clear contents of TMR2
+	TMR3 = 0x0; // Clear contents of TMR3
 }
 
 /* Timer2 ISR - handling OC-PWM module operations */
@@ -136,7 +106,7 @@ void initPWM(void){
 	IFS0CLR = 0x00000100; //clear Timer 2 interrupt	
 	IEC0SET = 0x00000100; //enable Timer 2 interrupt
 	IPC2SET = 0x0000000F; //Timer 2 interrupt priority 3, subpriority 3
-	T2CONbits.TCKPS = 0b101; 	// prescale = 1:64
+	T2CONbits.TCKPS = 0b000; 	// prescale = 1:64
 	T2CONSET = 0x8000; //start Timer 2
 	OC1CONCLR = 0x8000; //enable OC1 module for PWM generation
 }
@@ -155,7 +125,7 @@ static void note(unsigned int n){
 	OC1CONSET = 0x8000;
 }
 
-static void StarsSim(void){
+void StarsSim(void){
 	playnote(c3);
 	playnote(c3);
 	playnote(g3);
@@ -209,10 +179,7 @@ static void TestPWMFrequency(void){
 	note(d3);
 }
 
-void play(void){
-	OC1CONCLR = 0x8000;
-	
-	signal = getNote();
+void play(struct status signal){
 	if (signal.statusA == 0 && signal.statusB == 0 && signal.statusC == 0){
 		OC1CONCLR = 0x8000;
 	}
@@ -239,37 +206,3 @@ void play(void){
 	}
 }
 
-/* main function */
-int main() {
-	initIntGlobal();
-	T3Con();
-	LEDCon();
-	initPWM();
-	while (1){
-		//StarsSim();
-		//TestPWMFrequency();
-		//LEDSignal();
-		PORTDbits.RD1 = 1;
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		asm("NOP");
-		PORTDbits.RD1 = 0;
-	
-		asm("NOP");
-	
-	}
-}

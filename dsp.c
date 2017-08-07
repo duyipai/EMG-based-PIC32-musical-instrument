@@ -4,7 +4,7 @@ static unsigned char numOfHit();
 static unsigned char statusEq(struct status * a, struct status * b);
 struct accumStatus
 {
-    struct status statusArr[10];
+    struct status statusArr[20];
     unsigned char size;
     unsigned char frontIndex;
 };
@@ -14,13 +14,13 @@ static struct accumStatus globalStatus;
 
 struct status getNote()
 {
-    if (globalStatus.size<9)
+    if (globalStatus.size<19)
     {
         return nullStatus;
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>4)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>9)
         {
             return globalStatus.statusArr[globalStatus.frontIndex];
         }
@@ -35,21 +35,21 @@ void pushStatus()
 {
     struct status * modifiy = &(globalStatus.statusArr[globalStatus.frontIndex]);
     ++globalStatus.frontIndex;
-    if(globalStatus.frontIndex > 9)
+    if(globalStatus.frontIndex > 19)
     {
         globalStatus.frontIndex = 0;
     }
 
     unsigned char hit = 0;
     unsigned char i;
-    for(i = 0; i < 30; ++i)
+    for(i = 0; i < 20; ++i)
     {
         if(receiver.arrA[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 30)
+    if (hit == 20)
     {
         modifiy->statusA = 1;
     }
@@ -59,14 +59,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 30; ++i)
+    for(i = 0; i < 20; ++i)
     {
         if(receiver.arrB[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 30)
+    if (hit == 20)
     {
         modifiy->statusB = 1;
     }
@@ -76,14 +76,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 30; ++i)
+    for(i = 0; i < 20; ++i)
     {
         if(receiver.arrC[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit == 30)
+    if (hit == 20)
     {
         modifiy->statusC = 1;
     }
@@ -113,7 +113,7 @@ static unsigned char numOfHit(struct accumStatus * arr, struct status * element)
 {
     unsigned char num = 0;
     unsigned char i;
-    for(i= 0; i < 10; ++i)
+    for(i= 0; i < 20; ++i)
     {
         if(statusEq(&(arr->statusArr[i]), element))
         {

@@ -1,14 +1,6 @@
-#include <p32xxxx.h>
 #include "dsp.h"
 #include <plib.h>
-
-#include <string.h>
-#include <kmem.h>
-
-#pragma interrupt ADC_interrupt ipl2 vector 27
-#pragma interrupt DMA0_ISR ipl1 vector 36
-#pragma interrupt DMA1_ISR ipl1 vector 37
-#pragma interrupt DMA2_ISR ipl1 vector 38
+#include <sys/kmem.h>
 
 static int flags=0;
 static int buff = 0;
@@ -24,20 +16,8 @@ static unsigned char arrC1[20];
 static unsigned char arrC2[20];
 
 static int count=0;
-static int flag=1;
-static unsigned char *arrA;
-static unsigned char *arrB;
-static unsigned char *arrC;
-
-
-
-
-
-
-
 
 void ADCcSonfig(void){
-	INTCONbits.MVEC = 1; 		// Enable multiple vector interrupt
 	asm ("ei"); 				// Enable all interrupts
 	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
 	IFS1CLR = 0x00000002; 		// Clear timer interrupt flag
@@ -50,7 +30,7 @@ void ADCcSonfig(void){
  // AD1CHSbits.CH0SB = 0b0011;	//b.  AN3 as pos input
 	//AD1CON1bits = 0x000;		//c. set output format 000 (unsigned, frac, 16-bit)	
     AD1CON1bits.FORM=0b100;	
-AD1CON1SET = 0xE0;		//d. SSRC
+	AD1CON1SET = 0xE0;		//d. SSRC
 	AD1CON2bits.VCFG = 0b011;	//e. VCFG 
 	//AD1CON2SET = 0x400;		//f. CSCNA field of AD1CON2, MUX A
 	//g. SMPI 0010
@@ -70,22 +50,20 @@ AD1CON1SET = 0xE0;		//d. SSRC
 	//l. ADCS Tad = 500 Tpb -> ADCS = 249
 	AD1CON3SET = 0xF9;
 
-
 	//m. turn on
 	AD1CON1SET = 0x8000;
 	AD1CON1bits.ASAM = 1;
 }
 
+#pragma interrupt ADC_interrupt ipl2 vector 27
 void ADC_interrupt(void){
 	//AD1CON1SET = 0x1;
 
 	// deliver data to LCD
     if(count>=19)
     {
-        flag=flag*(-1);
+     	AD1CON1bits.SAMP = 0;
     }
-
-
 
     if(ADC1BUF0>=0b1100000000)
     {
@@ -116,25 +94,34 @@ nonidea=ADC1BUF2;
     {valueC=(330*ADC1BUF2)/1024;
 nonidea=ADC1BUF2;}   
 
-if(flag==1)
-{
     arrA1[count]=valueA;
     arrB1[count]=valueB;
     arrC1[count]=valueC;
-}
-else
-{
-    arrA2[count]=valueA;
-    arrB2[count]=valueB;
-    arrC2[count]=valueC;
-}
-
     count++;
 
-
+	if(count>=20)
+     {
+		int i1;
+		for(i1=0;i1<=19;i1++)
+		{
+		arrA2[i1]=arrA1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrB2[i1]=arrB1[i1];
+		}
+		for(i1=0;i1<=19;i1++)
+		{
+		arrC2[i1]=arrC1[i1];
+		}
+		count=0;
+		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		AD1CON1bits.SAMP = 1;
+    }
 	
 	IFS1CLR = 0x2; 		// Clear ADC interrupt flag
-
 }
 
 void DMAconfig()
@@ -150,17 +137,17 @@ DCH0ECON=0; // no start or stop IRQ, no pattern match
 DCH1ECON=0; // no start or stop IRQ, no pattern match
 DCH2ECON=0; // no start or stop IRQ, no pattern match
 /********* program the transfer *********/
-DCH0SSA=KVA_TO_PA(arrA); // transfer source physical address
+DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
 DCH0DSA=KVA_TO_PA(&receiver.arrA[0]); // transfer destination physical address
 DCH0SSIZ=20; // source size 30 bytes
 DCH0DSIZ=20; // destination size 30 bytes
 DCH0CSIZ=20; // 30 bytes transferred per event
-DCH1SSA=KVA_TO_PA(arrB); // transfer source physical address
+DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
 DCH1DSA=KVA_TO_PA(&receiver.arrB[0]); // transfer destination physical address
 DCH1SSIZ=20; // source size 30 bytes
 DCH1DSIZ=20; // destination size 30 bytes
 DCH1CSIZ=20; // 30 bytes transferred per event
-DCH2SSA=KVA_TO_PA(arrC); // transfer source physical address
+DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
 DCH2DSA=KVA_TO_PA(&receiver.arrC[0]); // transfer destination physical address
 DCH2SSIZ=20; // source size 30 bytes
 DCH2DSIZ=20; // destination size 30 bytes
@@ -185,6 +172,7 @@ DCH1CONSET=0x80; // turn channel on
 DCH2CONSET=0x80; // turn channel on
 }
 
+#pragma interrupt DMA0_ISR ipl1 vector 36
 void DMA0_ISR ()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
@@ -192,6 +180,7 @@ DCH0ECONbits.CABORT=0b1;
 pushStatus();
 }
 
+#pragma interrupt DMA1_ISR ipl1 vector 37
 void DMA1_ISR ()
 {
 IFS1CLR=0x00020000; // clear existing DMA channel 1 interrupt flag
@@ -199,42 +188,10 @@ DCH1ECONbits.CABORT=0b1;
 pushStatus();
 }
 
+#pragma interrupt DMA2_ISR ipl1 vector 38
 void DMA2_ISR ()
 {
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
 DCH2ECONbits.CABORT=0b1;
 pushStatus();
-}
-
-int main(){
-
-
-	ADCcSonfig();
-	DMAconfig();
-	AD1CON1bits.SAMP = 1;
-
-	while(1)
-    {
-    	if(count>=20)
-     	{
-			int i1;
-			for(i1=0;i1<=19;i1++)
-			{
-				arrA2[i1]=arrA1[i1];
-			}
-			for(i1=0;i1<=19;i1++)
-			{
-				arrB2[i1]=arrB1[i1];
-			}
-			for(i1=0;i1<=19;i1++)
-			{
-				arrC2[i1]=arrC1[i1];
-			}
-			count=0;
-			DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-			DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-			DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
-			AD1CON1bits.SAMP = 1;
-    	}
-	}
 }
