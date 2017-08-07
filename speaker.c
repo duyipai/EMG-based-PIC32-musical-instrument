@@ -1,11 +1,7 @@
 #include <p32xxxx.h>
 #include <plib.h>
 #include "dsp.h"
-<<<<<<< HEAD
 #include "speaker.h"
-=======
-#include "pwm-speaker.h"
->>>>>>> 7b9efa4b6ac590a9e06a6bda4a696243b499b1df
 
 /*
 In this file, components are used to fit FRCDIV (4MHz)
