@@ -20,7 +20,7 @@ struct status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>10)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>5)
         {
             return globalStatus.statusArr[globalStatus.frontIndex];
         }
@@ -50,7 +50,7 @@ void pushStatus()
             ++hit;
         }
     }
-    if (hit > 9)
+    if (hit > 5)
     {
         modifiy->statusA = 1;
     }
@@ -67,7 +67,7 @@ void pushStatus()
             ++hit;
         }
     }
-    if (hit > 9)
+    if (hit > 5)
     {
         modifiy->statusB = 1;
     }
@@ -84,7 +84,7 @@ void pushStatus()
             ++hit;
         }
     }
-    if (hit > 9)
+    if (hit > 5)
     {
         modifiy->statusC = 1;
     }
