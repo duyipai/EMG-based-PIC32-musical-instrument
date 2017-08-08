@@ -6,8 +6,7 @@ int main()
 {
     INTCONbits.MVEC = 1; // Enable multiple vector interrupt
     initIntGlobal();
-    ADCcSonfig();    
-	T3Con();
+    ADCcSonfig(); 
 	initPWM();
     AD1CON1bits.SAMP = 1;
 	tr4config();

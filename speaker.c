@@ -23,10 +23,10 @@ static unsigned int tmp = 1911;
 
 
 
-#pragma interrupt T3_ISR ipl4 vector 12
+//#pragma interrupt T3_ISR ipl4 vector 12
 //PWM use T2
 
-
+/*
 static void GenMsec(void) {
 	PR3 = 999; // Load PR3
 	TMR3 = 0x0; // Clear contents of TMR3
@@ -46,7 +46,10 @@ static void DelayMsec(int num) {
 		GenMsec();
 	}
 }
+
+
 /* timer interrupt handler */
+/*
 static void T3_ISR (void) 
 {
 	flags=1;
@@ -63,11 +66,12 @@ void T3Con(void){
                     // internal clock
 	TMR3 = 0x0; // Clear contents of TMR3
 }
+*/
 
 /* Timer2 ISR - handling OC-PWM module operations */
 #pragma interrupt PWM_ISR ipl3 vector 8
 static void PWM_ISR (void) {
-	OC1RS = PR2 * 0.05; //update duty cycle register
+	OC1RS = PR2 * 0.12; //update duty cycle register
 	IFS0CLR = 0x0100; //clear Timer 2 interrupt flag
 }
 
@@ -97,6 +101,7 @@ void initPWM(void){
 	OC1CONCLR = 0x8000; //enable OC1 module for PWM generation
 }
 
+/*
 static void playnote(unsigned int n){
 	PR2 = n;
 	OC1CONSET = 0x8000;
@@ -105,12 +110,14 @@ static void playnote(unsigned int n){
 	DelayMsec(300);
 	
 }
+*/
 
 static void note(unsigned int n){
 	PR2 = n;
 	OC1CONSET = 0x8000;
 }
 
+/*
 void StarsSim(void){
 	playnote(c3);
 	playnote(c3);
@@ -161,6 +168,8 @@ void StarsSim(void){
 	DelayMsec(1000);
 
 }
+*/
+
 static void TestPWMFrequency(void){
 	note(d3);
 }
@@ -181,7 +190,7 @@ void play(struct status signal){
 	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 0){
 		note(f3);
 	}
-a	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 1){
+	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 1){
 		note(g3);
 	}
 	else if(signal.statusA == 1 && signal.statusB == 1 && signal.statusC == 0){
