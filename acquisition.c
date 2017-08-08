@@ -264,7 +264,7 @@ nonidea=ADC1BUF2;}
 		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
 		AD1CON1bits.SAMP = 1;
     }
-IFS0CLR = 0x10000; // Clear timer 4 interrupt flag
+IFS0CLR = 0x0010000; // Clear timer 4 interrupt flag
 }
 
 void tr4config()

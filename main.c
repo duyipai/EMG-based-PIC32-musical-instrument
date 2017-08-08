@@ -10,6 +10,7 @@ int main()
 	T3Con();
 	initPWM();
     AD1CON1bits.SAMP = 1;
+	tr4config();
 	while (1)
     {
         struct status tmp= getNote();

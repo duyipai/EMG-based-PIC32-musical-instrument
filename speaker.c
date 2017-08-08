@@ -181,7 +181,7 @@ void play(struct status signal){
 	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 0){
 		note(f3);
 	}
-	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 1){
+a	else if(signal.statusA == 1 && signal.statusB == 0 && signal.statusC == 1){
 		note(g3);
 	}
 	else if(signal.statusA == 1 && signal.statusB == 1 && signal.statusC == 0){
