@@ -1,6 +1,6 @@
 #include "dsp.h"
 static unsigned char threshold = 120;
-static unsigned char numOfHit();
+static unsigned char numOfHit(struct accumStatus * arr, struct status * element, unsigned char index);
 static unsigned char statusEq(struct status * a, struct status * b);
 struct accumStatus
 {
