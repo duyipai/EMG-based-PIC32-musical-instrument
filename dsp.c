@@ -85,7 +85,7 @@ void pushStatus()
             ++hit;
         }
     }
-    if (hit > 2)
+    if (hit == 2)
     {
         modifiy->statusC = 1;
     }
