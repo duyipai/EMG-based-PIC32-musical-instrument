@@ -19,10 +19,10 @@ void DMAconfig();
 
 void ADCcSonfig(void){
 	asm ("ei"); 				// Enable all interrupts
-	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
+/*	IPC6SET = 0x08000000; 		// Interrupt priority level 2, Subpriority level 0
 	IFS1CLR = 0x00000002; 		// Clear timer interrupt flag
 	IEC1SET = 0x00000002; 		// Enable ADC interrupt
-
+*/
 	TRISB = 0xffff;		//a. pin input
 	AD1PCFG = 0xffc7;      //PORTB = Digital; RB3,4,5 = analog
 
@@ -55,7 +55,7 @@ void ADCcSonfig(void){
 	AD1CON1bits.ASAM = 1;
 }
 
-#pragma interrupt ADC_interrupt ipl2 vector 27
+/*#pragma interrupt ADC_interrupt ipl2 vector 27
 void ADC_interrupt(void){
 	//AD1CON1SET = 0x1;
 
@@ -116,25 +116,7 @@ nonidea=ADC1BUF2;}
 		}
 		count=0;
 		DMAconfig();
-/*
-DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
-DCH0DSA=KVA_TO_PA(&(receiver.arrA[0])); // transfer destination physical address
-DCH0SSIZ=10; // source size 30 bytes
-DCH0DSIZ=10; // destination size 30 bytes
-DCH0CSIZ=10; // 30 bytes transferred per event
-DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
-DCH1DSA=KVA_TO_PA(&(receiver.arrB[0])); // transfer destination physical address
-DCH1SSIZ=10; // source size 30 bytes
-DCH1DSIZ=10; // destination size 30 bytes
-DCH1CSIZ=10; // 30 bytes transferred per event
-DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
-DCH2DSA=KVA_TO_PA(&(receiver.arrC[0])); // transfer destination physical address
-DCH2SSIZ=10; // source size 30 bytes
-DCH2DSIZ=10; // destination size 30 bytes
-DCH2CSIZ=10; // 30 bytes transferred per event
-DCH0CONSET=0x80; // turn channel on
-DCH1CONSET=0x80; // turn channel on
-DCH2CONSET=0x80; // turn channel on*/
+
 		
 		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
 		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
@@ -144,7 +126,7 @@ DCH2CONSET=0x80; // turn channel on*/
 	
 	IFS1CLR = 0x2; 		// Clear ADC interrupt flag
 }
-
+*/
 void DMAconfig()
 {
 IFS1CLR=0x00010000; // clear existing DMA channel 0 interrupt flag
@@ -215,4 +197,87 @@ void DMA2_ISR ()
 IFS1CLR=0x00040000; // clear existing DMA channel 2 interrupt flag
 //DCH2ECONbits.CABORT=0b1;
 pushStatus();
+}
+
+#pragma interrupt T4_ISR ipl3 vector 16
+void T4_ISR (void) {
+ if(count>=9)
+    {
+     	AD1CON1bits.SAMP = 0;
+    }
+
+    if(ADC1BUF0>=0b1100000000)
+    {
+     valueA=0b11111010;
+     nonidea=ADC1BUF0;
+     }
+	else
+    {
+valueA=(330*ADC1BUF0)/1024;
+nonidea=ADC1BUF0;
+}
+    
+    if(ADC1BUF1>=0b1100000000)
+    {
+     valueB=0b11111010;
+nonidea=ADC1BUF1;
+     }
+	else
+    {valueB=(330*ADC1BUF1)/1024;
+nonidea=ADC1BUF1;} 
+ 
+    if(ADC1BUF2>=0b1100000000)
+    {
+     valueC=0b11111010;
+nonidea=ADC1BUF2;
+     }
+	else
+    {valueC=(330*ADC1BUF2)/1024;
+nonidea=ADC1BUF2;}   
+
+    arrA1[count]=valueA;
+    arrB1[count]=valueB;
+    arrC1[count]=valueC;
+    count++;
+
+	if(count>=10)
+     {
+		int i1;
+		for(i1=0;i1<=9;i1++)
+		{
+		arrA2[i1]=arrA1[i1];
+		}
+		for(i1=0;i1<=9;i1++)
+		{
+		arrB2[i1]=arrB1[i1];
+		}
+		for(i1=0;i1<=9;i1++)
+		{
+		arrC2[i1]=arrC1[i1];
+		}
+		count=0;
+		DMAconfig();
+
+		
+		DCH0ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH1ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		DCH2ECONSET=0x00000080;//SET CFORCE to be 1 to start dma transfer
+		AD1CON1bits.SAMP = 1;
+    }
+IFS0CLR = 0x10000; // Clear timer 4 interrupt flag
+}
+
+void tr4config()
+{
+IPC4SET = 0x0000000C; //Set priority level = 3
+IPC4SET = 0x00000001; //Set subpriority level = 1
+IFS0CLR = 0x00010000; //Clear Timer interrupt flag
+IEC0SET = 0x00010000; //Enable Timer interrupts
+
+	T4CON = 0x0; // Stop any 16/32-bit Timer2 operation
+	T4CONbits.TCKPS =  0B010; // Enable 16-bit mode, prescaler 1:1,
+                    // internal clock
+	TMR4 = 0x0; // Clear contents of TMR2
+	PR4=0x4e2; //1250
+	T4CONSET = 0x8000;
 }
