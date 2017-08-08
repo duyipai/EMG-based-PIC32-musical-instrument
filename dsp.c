@@ -1,5 +1,5 @@
 #include "dsp.h"
-static unsigned char threshold = 200;
+static unsigned char threshold = 120;
 static unsigned char numOfHit();
 static unsigned char statusEq(struct status * a, struct status * b);
 struct accumStatus
@@ -20,7 +20,7 @@ struct status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>5)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>6)
         {
             nullStatus = globalStatus.statusArr[globalStatus.frontIndex];
             return globalStatus.statusArr[globalStatus.frontIndex];
@@ -111,16 +111,33 @@ static unsigned char statusEq(struct status * a, struct status * b)
     return res;
 }
 
-static unsigned char numOfHit(struct accumStatus * arr, struct status * element)
+static unsigned char numOfHit(struct accumStatus * arr, struct status * element, unsigned char index)
 {
     unsigned char num = 0;
-    unsigned char i;
+    unsigned char i=index+1;
+    if (i>19)
+    {
+        i = 0;
+    }
+    do
+    {
+        if (statusEq(&(arr->statusArr[i]), element))
+        {
+            ++num;
+        }
+        ++i;
+        if (i>19)
+        {
+            i = 0;
+        }
+    }while (i != index);
+/*
     for(i= 0; i < 20; ++i)
     {
         if(statusEq(&(arr->statusArr[i]), element))
         {
             ++num;
         }
-    }
+    }*/
     return num;
 }
