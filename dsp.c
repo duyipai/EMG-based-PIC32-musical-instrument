@@ -20,7 +20,7 @@ struct status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]), globalStatus.frontIndex)>10)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]), globalStatus.frontIndex)>5)
         {
             nullStatus = globalStatus.statusArr[globalStatus.frontIndex];
             return globalStatus.statusArr[globalStatus.frontIndex];
@@ -44,14 +44,14 @@ void pushStatus()
 
     unsigned char hit = 0;
     unsigned char i;
-    for(i = 0; i < 10; ++i)
+    for(i = 0; i < 2; ++i)
     {
         if(receiver.arrA[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit > 5)
+    if (hit ==2)
     {
         modifiy->statusA = 1;
     }
@@ -61,14 +61,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 10; ++i)
+    for(i = 0; i < 2; ++i)
     {
         if(receiver.arrB[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit > 5)
+    if (hit == 2)
     {
         modifiy->statusB = 1;
     }
@@ -78,14 +78,14 @@ void pushStatus()
     }
 
     hit = 0;
-    for(i = 0; i < 10; ++i)
+    for(i = 0; i < 2; ++i)
     {
         if(receiver.arrC[i] > threshold)
         {
             ++hit;
         }
     }
-    if (hit > 5)
+    if (hit > 2)
     {
         modifiy->statusC = 1;
     }
