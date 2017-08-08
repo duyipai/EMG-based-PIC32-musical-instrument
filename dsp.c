@@ -119,7 +119,7 @@ static unsigned char numOfHit(struct accumStatus * arr, struct status * element,
     {
         i = 19;
     }
-    while(statusEq(&(arr->statusArr[i]), *element))
+    while(statusEq(&(arr->statusArr[i]), element))
     {
         ++num;
         --i;
