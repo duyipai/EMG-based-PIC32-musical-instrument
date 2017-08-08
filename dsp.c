@@ -114,10 +114,10 @@ static unsigned char statusEq(struct status * a, struct status * b)
 static unsigned char numOfHit(struct accumStatus * arr, struct status * element, unsigned char index)
 {
     unsigned char num = 0;
-    unsigned char i=index+1;
-    if (i>19)
+    unsigned char i=index-1;
+    if (i<0)
     {
-        i = 0;
+        i = 19;
     }
     do
     {
@@ -125,10 +125,10 @@ static unsigned char numOfHit(struct accumStatus * arr, struct status * element,
         {
             ++num;
         }
-        ++i;
-        if (i>19)
+        --i;
+        if (i<0)
         {
-            i = 0;
+            i = 19;
         }
     }while (i != index);
 /*
