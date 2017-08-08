@@ -20,7 +20,7 @@ struct status getNote()
     }
     else
     {
-        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]))>6)
+        if (numOfHit(&(globalStatus.statusArr), &(globalStatus.statusArr[globalStatus.frontIndex]), frontIndex)>6)
         {
             nullStatus = globalStatus.statusArr[globalStatus.frontIndex];
             return globalStatus.statusArr[globalStatus.frontIndex];
