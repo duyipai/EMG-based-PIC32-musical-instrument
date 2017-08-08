@@ -125,6 +125,10 @@ static unsigned char numOfHit(struct accumStatus * arr, struct status * element,
         {
             ++num;
         }
+        else
+        {
+            break;
+        }
         --i;
         if (i<0)
         {
