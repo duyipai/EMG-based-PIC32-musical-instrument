@@ -1,0 +1,68 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{amsmath,enumerate}
+\usepackage{enumitem}
+\setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\geometry{a4paper,centering,scale=0.75} %a4paper
+
+\linespread{1.4} %double spaced
+\usepackage{amssymb, graphics, setspace}
+\newcommand{\zdkh}[1]{\left\{\begin{aligned}#1\end{aligned}\right.}
+
+\newcommand{\mathsym}[1]{{}}
+\newcommand{\unicode}[1]{{}}
+\begin{document}
+\thispagestyle{empty}
+\vspace*{-2em}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{LOGO}
+\end{figure}
+\vspace*{-2em}
+\noindent \hrulefill
+\vspace{12em}
+
+
+\begin{center}
+
+\begin{huge}
+\sc{Ve311 Electronic Circuits}
+\end{huge}\\
+\vspace*{1cm}
+\begin{huge}
+	\sc{Lab 1 Report}
+\end{huge}
+
+\vspace*{2cm}
+\end{center}
+
+
+\vfill
+\noindent\hrulefill
+\begin{table}[h!]
+\flushleft
+\begin{tabular}{ll}
+Name: Zekun Du \hspace*{2em}&
+ID: 5143709249\hspace*{2em}\\
+Name: Yiming Wu \hspace*{2em}&
+ID: 5143709243\hspace*{2em}\\
+Date: June 15, 2017\\
+
+\end{tabular}
+\end{table}
+\vspace{-4em}
+\newpage
+
+
+\end{document}
