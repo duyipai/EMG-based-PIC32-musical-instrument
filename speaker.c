@@ -23,51 +23,6 @@ static unsigned int tmp = 1911;
 
 
 
-//#pragma interrupt T3_ISR ipl4 vector 12
-//PWM use T2
-
-/*
-static void GenMsec(void) {
-	PR3 = 999; // Load PR3
-	TMR3 = 0x0; // Clear contents of TMR3
-	T3CONSET = 0x8000; // Start Timer 3
-	while(1){
-		if(flags==1){
-			flags=0;
-			break;
-		}
-	}
-	T3CONCLR = 0x8000; // Close Timer 3
-}
-
-static void DelayMsec(int num) {
-	int ii;
-	for (ii=0; ii<num; ii++) {
-		GenMsec();
-	}
-}
-
-
-/* timer interrupt handler */
-/*
-static void T3_ISR (void) 
-{
-	flags=1;
-	IFS0CLR = (1<<12); // Clear timer 3 interrupt flag
-}
-
-void T3Con(void){
-
-	IPC3SET = 0b010001; // Interrupt priority level 4, Subpriority level 1
-	IFS0CLR = 0x1000; // Clear timer interrupt flag
-	IEC0SET = 0x1000; // Enable Timer3 interrupt
-	T3CON = 0x0; // Stop any 16/32-bit Timer2 operation
-	T3CONbits.TCKPS =  0b00; // Enable 16-bit mode, prescaler 1:1,
-                    // internal clock
-	TMR3 = 0x0; // Clear contents of TMR3
-}
-*/
-
 /* Timer2 ISR - handling OC-PWM module operations */
 #pragma interrupt PWM_ISR ipl3 vector 8
 static void PWM_ISR (void) {
@@ -101,74 +56,12 @@ void initPWM(void){
 	OC1CONCLR = 0x8000; //enable OC1 module for PWM generation
 }
 
-/*
-static void playnote(unsigned int n){
-	PR2 = n;
-	OC1CONSET = 0x8000;
-	DelayMsec(700);
-	OC1CONCLR = 0x8000;
-	DelayMsec(300);
-	
-}
-*/
 
 static void note(unsigned int n){
 	PR2 = n;
 	OC1CONSET = 0x8000;
 }
 
-/*
-void StarsSim(void){
-	playnote(c3);
-	playnote(c3);
-	playnote(g3);
-	playnote(g3);
-	playnote(a3);
-	playnote(a3);
-	playnote(g3);
-	DelayMsec(1000);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	playnote(d3);
-	playnote(c3);
-	DelayMsec(1000);
-	playnote(g3);
-	playnote(g3);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	DelayMsec(1000);
-	playnote(g3);
-	playnote(g3);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	DelayMsec(1000);
-	playnote(c3);
-	playnote(g3);
-	playnote(g3);
-	playnote(a3);
-	playnote(a3);
-	playnote(g3);
-	DelayMsec(1000);
-	playnote(f3);
-	playnote(f3);
-	playnote(e3);
-	playnote(e3);
-	playnote(d3);
-	playnote(d3);
-	playnote(c3);
-	DelayMsec(1000);
-
-}
-*/
 
 static void TestPWMFrequency(void){
 	note(d3);
@@ -199,8 +92,6 @@ void play(struct status signal){
 	else if(signal.statusA == 1 && signal.statusB == 1 && signal.statusC == 1){
 		note(b3);
 	}
-//	else {note(c4);}
 
-	//note(c4);
 }
 

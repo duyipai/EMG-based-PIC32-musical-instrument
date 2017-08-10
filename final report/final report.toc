@@ -13,5 +13,5 @@
 \contentsline {subsection}{\numberline {5.3}PWM Part}{9}{subsection.5.3}
 \contentsline {section}{\numberline {6}Component List}{10}{section.6}
 \contentsline {section}{\numberline {7}Schedule}{10}{section.7}
-\contentsline {section}{\numberline {8}Budget}{10}{section.8}
-\contentsline {section}{\numberline {9}Appendix}{11}{section.9}
+\contentsline {section}{\numberline {8}Budget}{11}{section.8}
+\contentsline {section}{\numberline {9}Appendix}{12}{section.9}
