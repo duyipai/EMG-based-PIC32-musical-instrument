@@ -3,15 +3,15 @@
 #include <sys/kmem.h>
 
 static unsigned char valueA,valueB,valueC,nonidea;
-static unsigned char arrA1[10];
+static unsigned char arrA1[2];
 
-static unsigned char arrA2[10];
-static unsigned char arrB1[10];
+static unsigned char arrA2[2];
+static unsigned char arrB1[2];
 
-static unsigned char arrB2[10];
-static unsigned char arrC1[10];
+static unsigned char arrB2[2];
+static unsigned char arrC1[2];
 
-static unsigned char arrC2[10];
+static unsigned char arrC2[2];
 
 static int count=0;
 
@@ -142,19 +142,19 @@ DCH2ECON=0; // no start or stop IRQ, no pattern match
 /********* program the transfer *********/
 DCH0SSA=KVA_TO_PA(&arrA2[0]); // transfer source physical address
 DCH0DSA=KVA_TO_PA(&(receiver.arrA[0])); // transfer destination physical address
-DCH0SSIZ=10; // source size 30 bytes
-DCH0DSIZ=10; // destination size 30 bytes
-DCH0CSIZ=10; // 30 bytes transferred per event
+DCH0SSIZ=2; // source size 30 bytes
+DCH0DSIZ=2; // destination size 30 bytes
+DCH0CSIZ=2; // 30 bytes transferred per event
 DCH1SSA=KVA_TO_PA(&arrB2[0]); // transfer source physical address
 DCH1DSA=KVA_TO_PA(&(receiver.arrB[0])); // transfer destination physical address
-DCH1SSIZ=10; // source size 30 bytes
-DCH1DSIZ=10; // destination size 30 bytes
-DCH1CSIZ=10; // 30 bytes transferred per event
+DCH1SSIZ=2; // source size 30 bytes
+DCH1DSIZ=2; // destination size 30 bytes
+DCH1CSIZ=2; // 30 bytes transferred per event
 DCH2SSA=KVA_TO_PA(&arrC2[0]); // transfer source physical address
 DCH2DSA=KVA_TO_PA(&(receiver.arrC[0])); // transfer destination physical address
-DCH2SSIZ=10; // source size 30 bytes
-DCH2DSIZ=10; // destination size 30 bytes
-DCH2CSIZ=10; // 30 bytes transferred per event
+DCH2SSIZ=2; // source size 30 bytes
+DCH2DSIZ=2; // destination size 30 bytes
+DCH2CSIZ=2; // 30 bytes transferred per event
 DCH0INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
 DCH0INTbits.CHBCIE=1;//enable the destination done interrupt
 DCH1INTCLR=0x00ff00ff; // clear existing events, disable all interrupts
@@ -201,7 +201,7 @@ pushStatus();
 
 #pragma interrupt T4_ISR ipl3 vector 16
 void T4_ISR (void) {
- if(count>=9)
+ if(count>=1)
     {
      	AD1CON1bits.SAMP = 0;
     }
@@ -240,18 +240,18 @@ nonidea=ADC1BUF2;}
     arrC1[count]=valueC;
     count++;
 
-	if(count>=10)
+	if(count>=2)
      {
 		int i1;
-		for(i1=0;i1<=9;i1++)
+		for(i1=0;i1<=1;i1++)
 		{
 		arrA2[i1]=arrA1[i1];
 		}
-		for(i1=0;i1<=9;i1++)
+		for(i1=0;i1<=1;i1++)
 		{
 		arrB2[i1]=arrB1[i1];
 		}
-		for(i1=0;i1<=9;i1++)
+		for(i1=0;i1<=1;i1++)
 		{
 		arrC2[i1]=arrC1[i1];
 		}
@@ -278,6 +278,6 @@ IEC0SET = 0x00010000; //Enable Timer interrupts
 	T4CONbits.TCKPS =  0B010; // Enable 16-bit mode, prescaler 1:1,
                     // internal clock
 	TMR4 = 0x0; // Clear contents of TMR2
-	PR4=0x4e2; //1250
+	PR4=1200;
 	T4CONSET = 0x8000;
 }
